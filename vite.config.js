@@ -1,22 +1,39 @@
 import { defineConfig } from 'vite';
-import legacy from '@vitejs/plugin-legacy';
+
+const webprovisionsPackageVitePlugin = () => {
+  const outputEntryFile = 'index.js';
+  const outputDir = 'dist';
+
+  return {
+    name: 'webprovisions-package',
+    async config(config) {
+      return {
+        ...config,
+        base: './',
+        build: {
+          ...config?.build,
+          assetsDir: '.',
+          rollupOptions: {
+            ...config?.build?.rollupOptions,
+            output: {
+              ...config?.build?.rollupOptions?.output,
+              dir: outputDir,
+              entryFileNames: outputEntryFile,
+              format: 'es',
+              chunkFileNames: `[name]-[hash].js`,
+            },
+          },
+        },
+      };
+    },
+  };
+};
 
 export default defineConfig({
-  plugins: [
-    legacy({
-      renderLegacyChunks: false,
-    }),
-  ],
+  plugins: [webprovisionsPackageVitePlugin()],
   build: {
-    assetsDir: '',
     rollupOptions: {
-      input: './index.js',
-      output: {
-        dir: 'dist',
-        inlineDynamicImports: true,
-        entryFileNames: 'index.js',
-        format: 'es',
-      },
+      input: 'src/index.ts',
     },
   },
 });
